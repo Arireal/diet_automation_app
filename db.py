@@ -1,4 +1,6 @@
 import sqlite3
+import json
+from datetime import datetime
 
 DB_PATH = "data/diet_app.db"
 
@@ -57,6 +59,17 @@ def create_tables():
         diet_id INTEGER NOT NULL,
         name TEXT NOT NULL,
         order_index INTEGER NOT NULL,
+        FOREIGN KEY (diet_id) REFERENCES diets (id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS weekly_plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        diet_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        plan_data TEXT NOT NULL,
         FOREIGN KEY (diet_id) REFERENCES diets (id)
     )
     """)
@@ -260,7 +273,6 @@ def add_food_category(diet_id: int, name: str):
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Check if this category name already exists for this diet
     cursor.execute(
         "SELECT id FROM food_categories WHERE diet_id = ? AND name = ?",
         (diet_id, name)
@@ -269,7 +281,7 @@ def add_food_category(diet_id: int, name: str):
     existing = cursor.fetchone()
     if existing:
         conn.close()
-        return existing[0]  # Return existing ID if duplicate
+        return existing[0]
 
     cursor.execute(
         "SELECT COALESCE(MAX(order_index), 0) + 1 FROM food_categories WHERE diet_id = ?",
@@ -316,20 +328,17 @@ def ensure_default_food_categories(diet_id: int):
     """
     Ensure default food categories exist for a diet.
     Only adds them if they don't already exist (by name).
-    This way, custom categories are ADDED to defaults, not replacing them.
     """
     conn = get_connection()
     cursor = conn.cursor()
 
     for default_name in DEFAULT_FOOD_CATEGORIES:
-        # Check if this specific category already exists
         cursor.execute(
             "SELECT id FROM food_categories WHERE diet_id = ? AND name = ?",
             (diet_id, default_name)
         )
 
         if not cursor.fetchone():
-            # Only add if it doesn't exist
             cursor.execute(
                 "SELECT COALESCE(MAX(order_index), 0) + 1 FROM food_categories WHERE diet_id = ?",
                 (diet_id,)
@@ -365,6 +374,72 @@ def delete_food_category(food_category_id: int):
 def seed_default_food_categories(diet_id: int):
     """
     DEPRECATED - Use ensure_default_food_categories instead.
-    Kept for backward compatibility.
     """
     ensure_default_food_categories(diet_id)
+
+
+def save_weekly_plan(diet_id: int, name: str, plan_data: dict):
+    """Save a weekly plan to favorites"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute(
+        """
+        INSERT INTO weekly_plans (diet_id, name, created_at, plan_data)
+        VALUES (?, ?, ?, ?)
+        """,
+        (diet_id, name, created_at, json.dumps(plan_data))
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_weekly_plans(diet_id: int):
+    """Get all saved weekly plans for a diet"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT id, name, created_at, plan_data
+        FROM weekly_plans
+        WHERE diet_id = ?
+        ORDER BY created_at DESC
+        """,
+        (diet_id,)
+    )
+
+    plans = cursor.fetchall()
+    conn.close()
+    return plans
+
+
+def delete_weekly_plan(plan_id: int):
+    """Delete a weekly plan"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM weekly_plans WHERE id = ?",
+        (plan_id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def update_weekly_plan_name(plan_id: int, new_name: str):
+    """Update the name of a weekly plan"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "UPDATE weekly_plans SET name = ? WHERE id = ?",
+        (new_name, plan_id)
+    )
+
+    conn.commit()
+    conn.close()
