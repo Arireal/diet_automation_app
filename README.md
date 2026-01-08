@@ -1,4 +1,4 @@
-🥗 Diet Automation MVP
+## 🥗 Diet Automation MVP
 
 A local-first, data-driven diet planning system built with Python & SQLite
 
@@ -6,7 +6,11 @@ Diet Automation MVP is a lightweight yet powerful application designed to automa
 
 This project goes beyond a simple CRUD demo — it demonstrates real-world software engineering practices, including relational data modeling, deterministic + randomized logic, and state-safe UI design.
 
-🚀 Overview
+## Overview
+
+
+<img width="680" height="1000" alt="Untitled design(5)" src="https://github.com/user-attachments/assets/4aba51ab-fd8e-4124-ac50-c6367b5ce487" /><br>
+
 
 Planning diets manually is repetitive, error-prone, and difficult to scale.
 
@@ -23,7 +27,7 @@ Keeping all data local and owned by the user
 ⚠️ This is an MVP.
 The code is currently public for demonstration purposes and will be made private once the project moves beyond MVP.
 
-✨ Features
+## ✨ Features
 📝 Diet & Food Management
 
 Create and manage multiple diets
@@ -72,7 +76,8 @@ Delete unwanted plans
 
 Expand to view full 7-day details
 
-🧠 Engineering Highlights
+
+## 🧠 Engineering Highlights
 
 This project intentionally implements patterns often missing in junior portfolios:
 
@@ -92,7 +97,8 @@ This project intentionally implements patterns often missing in junior portfolio
 
 ✅ Clear separation between UI and database logic
 
-🧰 Tech Stack
+
+## 🧰 Tech Stack
 Backend / Logic
 
 Python
@@ -119,7 +125,8 @@ No cloud dependency
 
 Easily extensible into SaaS or desktop app
 
-🎨 UI Direction
+
+## 🎨 UI Direction
 
 Clean and minimal
 
@@ -143,7 +150,8 @@ Clients needing local-first tools
 
 Developers interested in clean logic over flashy UI
 
-🛣️ Roadmap (Post-MVP)
+
+##  Roadmap (Post-MVP)
 
 Export weekly plans (PDF / image)
 
@@ -157,7 +165,8 @@ Public API
 
 Desktop packaging
 
-📬 Contact
+
+## 📬 Contact
 
 If you’re looking for:
 
